@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>example</title>
+    <script src="/js/jspsych.js"></script>
+    <script src="/jspsych-affect-grid.js"></script>
+    <link rel="stylesheet" href="/css/jspsych.css">
+</head>
+<body>
+</body>
+<script>
+    var affecr_grid={
+      type: 'affect-grid'
+    };
+
+    jsPsych.init({
+    timeline: [affecr_grid],
+    on_finish: function() {
+      jsPsych.data.displayData();
+    }
+  });
+</script>
+</html>
