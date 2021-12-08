@@ -30,23 +30,30 @@ jsPsych.plugins["affect-grid"] = (function () {
 				default: null,
 				description: 'Any content here will be displayed below the stimulus'
 			},
-			label: {
+			custom_label: {
 				type: jsPsych.plugins.parameterType.BOOL,
-				pretty_name: 'label',
+				pretty_name: 'custom_label',
 				default: false
 			},
 			label_name: {
 				type: jsPsych.plugins.parameterType.FUNCTION,
 				pretty_name: 'label_name',
 				default: {
-				high: "覚醒", 
-				low: "睡眠", 
-				pleasant: "快", 
-				unpleasant: "不快", 
-				stress: "緊張", 
-				excitement: "興奮", 
-				depression: "落ち込み", 
-				relaxation: "リラックス"}
+					high: " ",
+					low: " ",
+					pleasant: " ",
+					unpleasant: " ",
+					stress: " ",
+					excitement: " ",
+					depression: " ",
+					relaxation: " "
+				}
+			},
+			rated_stimulus: {
+				type: jsPsych.plugins.parameterType.HTML_STRING,
+				pretty_name: 'rated_stimulus',
+				default: 'undefined',
+				description: 'Any content here will be displayed above the grid'
 			}
 		}
 	}
@@ -59,40 +66,43 @@ jsPsych.plugins["affect-grid"] = (function () {
 			column: null
 		}
 
-		if (trial.label == false){
+
+
+		if (trial.custom_label == false) {
 			this.axis = {
-				high: "High arousal", 
-				low: "Low arousal", 
-				pleasant: "Pleasant<br>Feelings", 
-				unpleasant: "Unpleasant<br>Feelings", 
-				stress: "Stress", 
-				excitement: "Excitement", 
-				depression: "depression", 
+				arousal: "High arousal",
+				sleepiness: "Sleepiness",
+				pleasant: "Pleasant<br>Feelings",
+				unpleasant: "Unpleasant<br>Feelings",
+				stress: "Stress",
+				excitement: "Excitement",
+				depression: "Depression",
 				relaxation: "Relaxation"
 			};
-		} else if (trial.label == true){
-			this.axis = trial.label_name
+		} else if (trial.custom_label == true) {
+			/*this.axis = trial.label_name*/
+			var defo = {
+				arousal: " ",
+				sleepiness: " ",
+				pleasant: " ",
+				unpleasant: " ",
+				stress: " ",
+				excitement: " ",
+				depression: " ",
+				relaxation: " "
+			}
+
+			this.axis = Object.assign(defo, trial.label_name)
 		}
-		
-
-		/*if (trial.language == 'eng') {
-			this.axis = {
-				high: "High arousal", low: "Low arousal", pleasant: "Pleasant<br>Feelings", unpleasant: "Unpleasant<br>Feelings", stress: "Stress", excitement: "Excitement", depression: "depression", relaxation: "Relaxation"
-			}
-		} else if (trial.language == 'jpa') {
-			this.axis = {
-				high: "高覚醒", low: "睡眠", pleasant: "快", unpleasant: "不快", stress: "緊張", excitement: "興奮", depression: "落ち込み", relaxation: "リラックス"
-			}
-		}*/
-
-
-
 
 
 		//display stimulus
 		var stimulus = this.stimulus(trial.grid_square_size);
 		display_element.innerHTML = stimulus;
 
+		if (trial.rated_stimulus !== 'undefined') {
+			display_element.insertAdjacentHTML('afterbegin', trial.rated_stimulus)
+		}
 		//show prompt if there is one
 		if (trial.prompt !== null) {
 			display_element.insertAdjacentHTML('beforeend', trial.prompt);
@@ -126,6 +136,8 @@ jsPsych.plugins["affect-grid"] = (function () {
 			}
 		}
 
+
+
 		function endTrial() {
 
 			// kill any remaining setTimeout handlers
@@ -134,9 +146,9 @@ jsPsych.plugins["affect-grid"] = (function () {
 			// gather the data to store for the trial
 			var trial_data = {
 				rt: response.rt,
-				response: [parseInt(response.row, 10), parseInt(response.column, 10)],
-				arousal: parseInt(response.row, 10)+1,
-				pleasantness: parseInt(response.column, 10)+1
+				stimulus: trial.rated_stimulus,
+				arousal: 10 - (parseInt(response.row, 10) + 1),
+				pleasantness: parseInt(response.column, 10) + 1
 			};
 
 			//clear the display
@@ -158,13 +170,18 @@ jsPsych.plugins["affect-grid"] = (function () {
 			}
 		};
 
+
+
+
 	};
 
 	plugin.stimulus = function (square_size, labels) {
-		var stimulus = "<div id = tbl style = 'display: table; font-family: Times New Roman; line-height: normal;'>"
+		var stimulus = "<div id = all_stm style = 'display: table;'>"
+
+		stimulus += "<div id = tbl style = 'display: table; font-family: Times New Roman; line-height: normal;'>"
 		stimulus += "<div id = tbl-row1 style= 'display: table-row;'>"
 		stimulus += "<div id = tbl-stress style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.stress + "</div>"
-		stimulus += "<div id = tbl-arousal style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.high + "</div>"
+		stimulus += "<div id = tbl-arousal style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.arousal + "</div>"
 		stimulus += "<div id = tbl-excitement style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.excitement + "</div></div>"
 		stimulus += "<div id = tbl-row2 style = 'display: table-row;'>"
 		stimulus += "<div id = tbl-unpleasant style= 'display: table-cell; font-size:" + square_size / 2 + "px;  vertical-align: middle;'>" + this.axis.unpleasant + "</div>"
@@ -195,9 +212,10 @@ jsPsych.plugins["affect-grid"] = (function () {
 		stimulus += "</div>";
 		stimulus += "<div id = tbl-row3 style = 'display: table-row;'>"
 		stimulus += "<div id = tbl-depression style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.depression + "</div>"
-		stimulus += "<div id = tbl-sleepness style= 'display: table-cell; font-size:" + square_size / 2 + "px'>" + this.axis.low + "</div>"
+		stimulus += "<div id = tbl-sleepness style= 'display: table-cell; font-size:" + square_size / 2 + "px'>" + this.axis.sleepiness + "</div>"
 		stimulus += "<div id = tbl-relaxation style= 'display: table-cell; font-size:" + square_size / 2 + "px;'>" + this.axis.relaxation + "</div>"
 
+		stimulus += "</div>";
 		stimulus += "</div>";
 		stimulus += "</div>";
 

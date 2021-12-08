@@ -1,23 +1,73 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>example</title>
-    <script src="/js/jspsych.js"></script>
-    <script src="/jspsych-affect-grid.js"></script>
-    <link rel="stylesheet" href="/css/jspsych.css">
+  <title>example</title>
+  <script src="/js/jspsych.js"></script>
+  <script src="/jspsych-affect-grid.js"></script>
+  <script src="../demo/irasutoya.png"></script>
+  <link rel="stylesheet" href="/css/jspsych.css">
 </head>
+
 <body>
 </body>
 <script>
-    var affecr_grid={
-      type: 'affect-grid'
-    };
+  var affect_grid1 = {
+    type: 'affect-grid'
+  }
 
-    jsPsych.init({
-    timeline: [affecr_grid],
-    on_finish: function() {
+  var affect_grid2 = {
+    type: 'affect-grid',
+    custom_label: true,
+    grid_square_size: 30,
+    label_name: {
+      arousal: "覚醒",
+      sleepiness: "睡眠",
+      pleasant: "快",
+      unpleasant: "不快",
+      stress: "緊張",
+      excitement: "興奮",
+      depression: "落ち込み",
+      relaxation: "リラックス"
+    }
+  }
+
+  var affect_grid3 = {
+    type: 'affect-grid',
+    custom_label: true,
+    grid_square_size: 30,
+    label_name: {
+      arousal: "覚醒",
+      sleepiness: "睡眠",
+      pleasant: "快",
+      unpleasant: "不快",
+      stress: "緊張",
+      excitement: "興奮",
+      depression: "落ち込み",
+      relaxation: "リラックス"
+    },
+    rated_stimulus: "<p style= 'color: red;'>激おこ</p>"
+  }
+
+  var affecr_grid4 = {
+    type: 'affect-grid',
+    custom_label: true,
+    grid_square_size: 30,
+    label_name: {
+      arousal: "覚醒",
+      sleepiness: "睡眠",
+      pleasant: "快",
+      unpleasant: "不快"
+    },
+    rated_stimulus: "<div style = 'text-align: center; margin: 100px;'><img src='irasutoya.png' width = 100px></div>"
+  };
+
+  jsPsych.init({
+    timeline: [affect_grid1, affect_grid2, affect_grid3, affecr_grid4],
+    on_finish: function () {
       jsPsych.data.displayData();
     }
   });
 </script>
+
 </html>
